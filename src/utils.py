@@ -110,3 +110,33 @@ class SoupGetter:
 
     def __call__(self, urls, **kwargs):
         return self.make_request(urls, **kwargs)
+
+
+def enumerate_solvable_levels():
+    """
+    Run this once to convert entries of solvable_levels.json from list, to list of tuples
+    """
+    if os.path.exists(SAVE_PATH_OF_SOLVABLE_LEVELS):
+        with open(SAVE_PATH_OF_SOLVABLE_LEVELS, 'r') as fin:
+            data = json.load(fin)
+
+        for k, v in data.items():
+            if isinstance(v, list):
+                if isinstance(v[0], str):
+                    print("File is in format List[urls]...converting")
+                    convert_flag = True
+                    break
+                else:
+                    print("File is in format List[Tuple(int,url)]...all good")
+                    convert_flag = False
+                    break
+            else:
+                print("File is not correct, please re-run pack_scraper.py!")
+
+        if convert_flag:
+            new_data = {}
+            for k, v in data.items():
+                new_data.update({k: [(i, v) for i, v in enumerate(v)]})
+            with open('test.json', 'w') as fout:
+                json.dump(new_data, fout)
+    return
