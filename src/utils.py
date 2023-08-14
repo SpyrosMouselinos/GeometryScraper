@@ -69,6 +69,14 @@ class SoupGetter:
         self.driver_options.add_argument('--disable-dev-shm-usage')
         self.driver_options.add_argument('--ignore-certificate-errors')
         self.driver_options.add_argument('--no-sandbox')
+        self.driver = None
+
+    def load_selenium(self):
+        self.driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=self.driver_options)
+
+    def unload_selenium(self):
+        del self.driver
+        self.driver = None
 
     def make_request(self, urls, **kwargs):
         if isinstance(urls, list):
@@ -85,8 +93,14 @@ class SoupGetter:
                 print("Error Loading the page", e)
                 sys.exit(1)
 
-            if req.content != b'':
-                soup = BeautifulSoup(req.content, "html.parser")
+            if self.driver:
+                self.driver.get(url)
+                content = self.driver.page_source
+            else:
+                content = req.content
+
+            if content != b'':
+                soup = BeautifulSoup(content, "html.parser")
                 output = self.post_process_func(soup=soup, **kwargs)
                 outputs.append(output)
             else:
