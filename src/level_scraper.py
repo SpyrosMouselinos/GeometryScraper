@@ -143,8 +143,6 @@ def scrape_level(model, level, pack, get_question=True, get_steps=True, get_expl
 
 model = SoupGetter(post_process_func=None)
 for pack in solvable_packs:
-    if pack != 'Kappa':
-        continue
     scrape_index = 0
     max_scrape_index = len(solvable_packs[pack])
     for level in solvable_packs[pack]:
